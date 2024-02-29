@@ -1,0 +1,144 @@
+---
+title: "HW 3"
+author: "Kate Spiekerman, kls5665"
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+---
+
+```{r global_options, echo=FALSE}
+knitr::opts_chunk$set(fig.height=4, fig.width=5, warning=FALSE, tidy=TRUE, tidy.opts=list(width.cutoff=60))
+```
+
+The github link can be found [here](https://github.com/kspiekerman/HW3).
+
+## **Problem 1**
+
+```{r, echo=FALSE, message=FALSE}
+library(tidyverse)
+library(mosaic)
+```
+
+Null Hypothesis- securities trades from the Iron Bank are flagged at the same 2.4% baseline rate as that of other traders. 
+
+Test Statistic- the test statistic is the number of flagged trades from Iron Bank employees. In our data it is 70 flagged out of 2021 cases. 
+
+```{r, echo=FALSE}
+sim_bank = do(10000)*nflip(n=2021, prob=0.024)
+
+ggplot(sim_bank) + 
+  geom_histogram(aes(x=nflip), binwidth=1)
+
+sum(sim_bank >= 70)
+
+23/10000
+```
+P-value- the p-value of this test statistic is .0023
+
+Conclusion- I think that, based on this data, the null hypothesis is likely false. This is because of the low p-value. I think that .0023 is low enough to conclude that there was likely another factor (other than chance) that caused Iron Bank to have the reported number of flagged trades that they did. 
+
+## **Problem 2**
+
+Null Hypothesis- health code violations for Gourmet Bites occur at the same 3% baseline rate as that of other restaurants.  
+
+Test Statistic- the test statistic is the number of health code violations given to Gourmet Bites. In our data it is 8 violations out of 50 inspections.  
+
+```{r, echo=FALSE}
+sim_food = do(10000)*nflip(n=50, prob=0.03)
+
+ggplot(sim_food) + 
+  geom_histogram(aes(x=nflip), binwidth=1)
+
+sum(sim_food >= 8)
+```
+P-value- the p-value of this test statistic is 0
+
+Conclusion- I think that, based on this data, the null hypothesis is false. This is because of the p-value. Based on the Monte Carlo simulation, there is a 0% chance that a restaurant would get 8 or more health code violations due to random issues. 
+
+
+## **Problem 3**
+
+**Part A**
+```{r}
+letter_freq <- read.csv('letter_frequencies.csv')
+brown_sent <- readLines('brown_sentences.txt')
+
+calculate_chi_squared = function(brown_sent, letter_freq) {
+  
+  letter_freq$Probability = letter_freq$Probability / sum(letter_freq$Probability)
+  chi_squared_stats <- numeric(length(brown_sent))
+  
+  for (i in seq_along(brown_sent)){
+    clean_sentence = gsub("[^A-Za-z]", "", brown_sent[i])
+    clean_sentence = toupper(clean_sentence)
+  
+    observed_counts = table(factor(strsplit(clean_sentence, "")[[1]], levels = letter_freq$Letter))
+  
+    total_letters = sum(observed_counts)
+    expected_counts = total_letters * letter_freq$Probabilty
+  
+    chi_squared_stats[i] = sum((observed_counts - expected_counts)^2 / expected_counts)
+  }
+  return(chi_squared_stats)
+}
+
+brown_chi_squared <- calculate_chi_squared(brown_sent, letter_freq)
+brown_chi_squared <- as.data.frame(brown_chi_squared)
+
+ggplot(brown_chi_squared) +
+  geom_histogram(aes(x = brown_chi_squared), binwidth = 3)
+
+
+```
+I couldn't figure out why the function wouldn't work and I didn't have time to come to office hours this week. 
+
+**Part B**
+```{r, echo=FALSE}
+sentences <- c(
+    "She opened the book and started to read the first chapter, eagerly anticipating what might come next.",
+    "Despite the heavy rain, they decided to go for a long walk in the park, crossing the main avenue by the fountain in the center.",
+    "The museum’s new exhibit features ancient artifacts from various civilizations around the world.",
+    "He carefully examined the document, looking for any clues that might help solve the mystery.",
+    "The students gathered in the auditorium to listen to the guest speaker’s inspiring lecture.",
+    "Feeling vexed after an arduous and zany day at work, she hoped for a peaceful and quiet evening at home, cozying up after a quick dinner with some TV, or maybe a book on her upcoming visit to Auckland.",
+    "The chef demonstrated how to prepare a delicious meal using only locally sourced ingredients, focusing mainly on some excellent dinner recipes from Spain.",
+    "They watched the sunset from the hilltop, marveling at the beautiful array of colors in the sky.",
+    "The committee reviewed the proposal and provided many points of useful feedback to improve the project’s effectiveness.",
+    "Despite the challenges faced during the project, the team worked tirelessly to ensure its successful completion, resulting in a product that exceeded everyone’s expectations."
+)
+
+clean_sentence = gsub("[^A-Za-z]", "", brown_sent)
+clean_sentence = toupper(clean_sentence)
+
+observed_counts = table(factor(strsplit(clean_sentence, "")[[1]], levels = letter_freq$Letter))
+
+
+sentences_chi_squared <- calculate_chi_squared(sentences, letter_freq)
+sentences_chi_squared <- as.data.frame(sentences_chi_squared)
+sentences_chi_squared %>%
+  mutate(sentences_chi_squared, sentences_chi_squared = round(sentences_chi_squared, 3))
+
+
+
+```
+
+
+```{r}
+p_1 = sum(1*(brown_chi_squared>=0))/length(brown_chi_squared)
+p_2 = sum(1*(brown_chi_squared>=0))/length(brown_chi_squared)
+p_3 = sum(1*(brown_chi_squared>=0))/length(brown_chi_squared)
+p_4 = sum(1*(brown_chi_squared>=0))/length(brown_chi_squared)
+p_5 = sum(1*(brown_chi_squared>=0))/length(brown_chi_squared)
+P_6 = sum(1*(brown_chi_squared>=0))/length(brown_chi_squared)
+p_7 = sum(1*(brown_chi_squared>=0))/length(brown_chi_squared)
+p_8 = sum(1*(brown_chi_squared>=0))/length(brown_chi_squared)
+p_9 = sum(1*(brown_chi_squared>=0))/length(brown_chi_squared)
+p_10 = sum(1*(brown_chi_squared>=0))/length(brown_chi_squared)
+```
+
+
+
+
+
+
